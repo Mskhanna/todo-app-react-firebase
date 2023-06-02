@@ -1,6 +1,6 @@
 ## Todo App
 
-This is a Todo App built using React and Firebase. The app allows users to create, read, update, and delete todo items. It utilizes Firebase Firestore for storing and retrieving data.
+This is a Todo App built using ReactJS, Tailwind CSS and Firebase. The app allows users to create, read, update, and delete todo items. It utilizes Firebase Firestore for storing and retrieving data.
 
 ### Key Functionalities:
 
