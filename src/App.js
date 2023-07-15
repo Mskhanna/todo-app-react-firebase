@@ -26,7 +26,7 @@ function App() {
   const [todos, setTodos] = useState([]);
   const [input, setInput] = useState('');
 
-//Clear todos every 5 minutes
+//Clear todos every 2 hours
 const MINUTE_MS = 7200000;
 
 useEffect(() => {
