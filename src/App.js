@@ -26,6 +26,42 @@ function App() {
   const [todos, setTodos] = useState([]);
   const [input, setInput] = useState('');
 
+//Clear todos every 5 minutes
+const MINUTE_MS = 7200000;
+
+useEffect(() => {
+  const interval = setInterval(() => {
+    console.log('Logs every minute');
+    deleteAllTodos();
+  }, MINUTE_MS);
+
+  return () => clearInterval(interval); // This represents the unmount function, in which you need to clear your interval to prevent memory leaks.
+},)
+
+const deleteAllTodos = async () => {
+  const q = query(collection(db, 'todos'));
+  const unsubscribe = onSnapshot(q, (querySnapshot) => {
+    let todosArr = [];
+    querySnapshot.forEach((doc) => {
+      todosArr.push({id: doc.id});
+    });
+    setTodos(todosArr);
+    console.log(todosArr);
+    console.log(todosArr.length);
+    if (todosArr.length > 0) {
+      //todosArr.forEach(myFunction);
+      for (let i = 0; i < todosArr.length; i++) {
+        const idValue = todosArr[i].id;
+        deleteTodo(idValue);
+      }
+    }
+ 
+    //{todosArr.length > 0 ? (todosArr.forEach(deleteTodo)) : null};
+  });
+  return () => unsubscribe();
+};
+
+
   // Create todo
   const createTodo = async (e) => {
     e.preventDefault(e);
