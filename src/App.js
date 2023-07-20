@@ -1,7 +1,7 @@
-import React, { useState, useEffect } from 'react';
-import { AiOutlinePlus } from 'react-icons/ai';
-import Todo from './Todo';
-import { db } from './firebase';
+import React, { useState, useEffect } from "react";
+import { AiOutlinePlus } from "react-icons/ai";
+import Todo from "./Todo";
+import { db } from "./firebase";
 import {
   query,
   collection,
@@ -10,7 +10,7 @@ import {
   doc,
   addDoc,
   deleteDoc,
-} from 'firebase/firestore';
+} from "firebase/firestore";
 
 const style = {
   bg: `h-screen w-screen p-4 bg-gradient-to-r from-[#2F80ED] to-[#1CB5E0]`,
@@ -24,61 +24,60 @@ const style = {
 
 function App() {
   const [todos, setTodos] = useState([]);
-  const [input, setInput] = useState('');
+  const [input, setInput] = useState("");
 
-//Clear todos every 2 hours
+//Clear todos every 5 minutes
 const MINUTE_MS = 7200000;
 
-useEffect(() => {
-  const interval = setInterval(() => {
-    console.log('Logs every minute');
-    deleteAllTodos();
-  }, MINUTE_MS);
+  useEffect(() => {
+    const interval = setInterval(() => {
+      console.log("Logs every minute");
+      deleteAllTodos();
+    }, MINUTE_MS);
 
-  return () => clearInterval(interval); // This represents the unmount function, in which you need to clear your interval to prevent memory leaks.
-},)
-
-const deleteAllTodos = async () => {
-  const q = query(collection(db, 'todos'));
-  const unsubscribe = onSnapshot(q, (querySnapshot) => {
-    let todosArr = [];
-    querySnapshot.forEach((doc) => {
-      todosArr.push({id: doc.id});
-    });
-    setTodos(todosArr);
-    console.log(todosArr);
-    console.log(todosArr.length);
-    if (todosArr.length > 0) {
-      //todosArr.forEach(myFunction);
-      for (let i = 0; i < todosArr.length; i++) {
-        const idValue = todosArr[i].id;
-        deleteTodo(idValue);
-      }
-    }
- 
-    //{todosArr.length > 0 ? (todosArr.forEach(deleteTodo)) : null};
+    return () => clearInterval(interval); // This represents the unmount function, in which you need to clear your interval to prevent memory leaks.
   });
-  return () => unsubscribe();
-};
 
+  const deleteAllTodos = async () => {
+    const q = query(collection(db, "todos"));
+    const unsubscribe = onSnapshot(q, (querySnapshot) => {
+      let todosArr = [];
+      querySnapshot.forEach((doc) => {
+        todosArr.push({ id: doc.id });
+      });
+      setTodos(todosArr);
+      console.log(todosArr);
+      console.log(todosArr.length);
+      if (todosArr.length > 0) {
+        //todosArr.forEach(myFunction);
+        for (let i = 0; i < todosArr.length; i++) {
+          const idValue = todosArr[i].id;
+          deleteTodo(idValue);
+        }
+      }
+
+      //{todosArr.length > 0 ? (todosArr.forEach(deleteTodo)) : null};
+    });
+    return () => unsubscribe();
+  };
 
   // Create todo
   const createTodo = async (e) => {
     e.preventDefault(e);
-    if (input === '') {
-      alert('Please enter a valid todo');
+    if (input === "") {
+      alert("Please enter a valid todo");
       return;
     }
-    await addDoc(collection(db, 'todos'), {
+    await addDoc(collection(db, "todos"), {
       text: input,
       completed: false,
     });
-    setInput('');
+    setInput("");
   };
 
   // Read todo from firebase
   useEffect(() => {
-    const q = query(collection(db, 'todos'));
+    const q = query(collection(db, "todos"));
     const unsubscribe = onSnapshot(q, (querySnapshot) => {
       let todosArr = [];
       querySnapshot.forEach((doc) => {
@@ -91,14 +90,14 @@ const deleteAllTodos = async () => {
 
   // Update todo in firebase
   const toggleComplete = async (todo) => {
-    await updateDoc(doc(db, 'todos', todo.id), {
+    await updateDoc(doc(db, "todos", todo.id), {
       completed: !todo.completed,
     });
   };
 
   // Delete todo
   const deleteTodo = async (id) => {
-    await deleteDoc(doc(db, 'todos', id));
+    await deleteDoc(doc(db, "todos", id));
   };
 
   return (
@@ -110,8 +109,8 @@ const deleteAllTodos = async () => {
             value={input}
             onChange={(e) => setInput(e.target.value)}
             className={style.input}
-            type='text'
-            placeholder='Add Todo'
+            type="text"
+            placeholder="Add Todo"
           />
           <button className={style.button}>
             <AiOutlinePlus size={30} />
