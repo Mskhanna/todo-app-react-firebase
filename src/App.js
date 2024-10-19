@@ -55,10 +55,22 @@ function App() {
           deleteTodo(idValue);
         }
       }
-
       //{todosArr.length > 0 ? (todosArr.forEach(deleteTodo)) : null};
     });
     return () => unsubscribe();
+  };
+
+  // Edit todo
+  const editTodo = async (id, updatedData) => {
+    const todoRef = doc(db, "todos", id); // Reference to the specific document
+  
+    try {
+      // Update the document with new data
+      await updateDoc(todoRef, updatedData);
+      console.log(`Todo with ID: ${id} successfully updated`);
+    } catch (error) {
+      console.error("Error updating todo: ", error);
+    }
   };
 
   // Create todo
@@ -123,6 +135,7 @@ function App() {
               todo={todo}
               toggleComplete={toggleComplete}
               deleteTodo={deleteTodo}
+              editTodo={editTodo}
             />
           ))}
         </ul>
