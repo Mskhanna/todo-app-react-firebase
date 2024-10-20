@@ -2,8 +2,8 @@ import React, { useState } from 'react';
 import { FaRegTrashAlt, FaEdit } from 'react-icons/fa';
 
 const style = {
-  li: `flex justify-between bg-slate-200 p-4 my-2 capitalize`,
-  liComplete: `flex justify-between bg-slate-400 p-4 my-2 capitalize`,
+  li: `flex justify-between bg-slate-200 p-4 my-2`,
+  liComplete: `flex justify-between bg-slate-400 p-4 my-2`,
   row: `flex`,
   text: `ml-2 cursor-pointer`,
   textComplete: `ml-2 cursor-pointer line-through`,
@@ -12,12 +12,21 @@ const style = {
 
 const Todo = ({ todo, toggleComplete, deleteTodo, editTodo }) => {
   const [isEditing, setIsEditing] = useState(false);
-  const [newText, setNewText] = useState(todo.text);
+  const [editingTodoId, setEditingTodoId] = useState(null); // Track the ID of the editing todo
+  const [newText, setNewText] = useState(''); // Separate newText for each todo
+
+  // Handle editing start
+  const handleEditStart = (todo) => {
+    setIsEditing(true);
+    setEditingTodoId(todo.id); // Set the editingTodoId to the current todo's ID
+    setNewText(todo.text); // Initialize newText with the current todo's text
+  };
 
   // Handle editing submission
-  const handleEditSubmit = () => {
-    editTodo(todo.id, { text: newText });
+  const handleEditSubmit = (id) => {
+    editTodo(id, { text: newText });
     setIsEditing(false);
+    setEditingTodoId(null); // Reset editing state
   };
 
   return (
@@ -28,14 +37,14 @@ const Todo = ({ todo, toggleComplete, deleteTodo, editTodo }) => {
           type="checkbox"
           checked={todo.completed ? 'checked' : ''}
         />
-        {isEditing ? (
+        {isEditing && editingTodoId === todo.id ? (
           <input
             type="text"
             value={newText}
             onChange={(e) => setNewText(e.target.value)}
-            onBlur={handleEditSubmit} // Save on losing focus
+            onBlur={() => handleEditSubmit(todo.id)} // Save on losing focus
             onKeyDown={(e) => {
-              if (e.key === 'Enter') handleEditSubmit(); // Save on Enter key
+              if (e.key === 'Enter') handleEditSubmit(todo.id); // Save on Enter key
             }}
             autoFocus
           />
@@ -50,9 +59,7 @@ const Todo = ({ todo, toggleComplete, deleteTodo, editTodo }) => {
       </div>
       <div>
         <button
-          onClick={() => {
-            setIsEditing(!isEditing); // Toggle the editing state
-          }}
+          onClick={() => handleEditStart(todo)} // Start editing the specific todo
         >
           <FaEdit />
         </button>
