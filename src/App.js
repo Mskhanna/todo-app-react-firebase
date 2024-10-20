@@ -28,39 +28,49 @@ function App() {
   const [todos, setTodos] = useState([]);
   const [input, setInput] = useState("");
 
-  //Clear todos every 2 hours
-  const MINUTE_MS = 7200000;
+  // Clear todos and refresh page every 15 minutes
+  // const FIFTEEN_MINUTES_MS = 5000;
 
-  useEffect(() => {
-    const interval = setInterval(() => {
-      console.log("Logs every minute");
-      deleteAllTodos();
-    }, MINUTE_MS);
+  // useEffect(() => {
+  //   const timeoutId = setTimeout(() => {
+  //     console.log("Refreshing the page after 15 minutes");
+  //     window.location.reload(); // Refresh the page
+  //   }, FIFTEEN_MINUTES_MS);
 
-    return () => clearInterval(interval); // This represents the unmount function, in which you need to clear your interval to prevent memory leaks.
-  });
+  //   // Delete todos when the user refreshes or closes the tab
+  //   const handleBeforeUnload = async (event) => {
+  //     // Delete all todos before unloading
+  //     await deleteAllTodos();
+  //   };
 
-  const deleteAllTodos = async () => {
-    const q = query(collection(db, "todos"));
-    const unsubscribe = onSnapshot(q, (querySnapshot) => {
-      let todosArr = [];
-      querySnapshot.forEach((doc) => {
-        todosArr.push({ id: doc.id });
-      });
-      setTodos(todosArr);
-      console.log(todosArr);
-      console.log(todosArr.length);
-      if (todosArr.length > 0) {
-        //todosArr.forEach(myFunction);
-        for (let i = 0; i < todosArr.length; i++) {
-          const idValue = todosArr[i].id;
-          deleteTodo(idValue);
-        }
-      }
-      //{todosArr.length > 0 ? (todosArr.forEach(deleteTodo)) : null};
-    });
-    return () => unsubscribe();
-  };
+  //   window.addEventListener("beforeunload", handleBeforeUnload);
+
+  //   return () => {
+  //     clearTimeout(timeoutId); // Cleanup timeout on unmount
+  //     window.removeEventListener("beforeunload", handleBeforeUnload); // Cleanup event listener
+  //   };
+  // }, []);
+  // const deleteAllTodos = async () => {
+  //   const q = query(collection(db, "todos"));
+  //   const unsubscribe = onSnapshot(q, (querySnapshot) => {
+  //     let todosArr = [];
+  //     querySnapshot.forEach((doc) => {
+  //       todosArr.push({ id: doc.id });
+  //     });
+  //     setTodos(todosArr);
+  //     console.log(todosArr);
+  //     console.log(todosArr.length);
+  //     if (todosArr.length > 0) {
+  //       //todosArr.forEach(myFunction);
+  //       for (let i = 0; i < todosArr.length; i++) {
+  //         const idValue = todosArr[i].id;
+  //         deleteTodo(idValue);
+  //       }
+  //     }
+  //     //{todosArr.length > 0 ? (todosArr.forEach(deleteTodo)) : null};
+  //   });
+  //   return () => unsubscribe();
+  // };
 
   // Edit todo
   const editTodo = async (id, updatedData) => {
@@ -75,33 +85,23 @@ function App() {
     }
   };
 
-// Create todo
-const createTodo = async (e) => {
-  e.preventDefault();
-  if (input === "") {
-    alert("Please enter a valid todo");
-    return;
-  }
-  await addDoc(collection(db, "todos"), {
-    text: input,
-    completed: false,
-    createdAt: serverTimestamp(), // Add timestamp when creating a todo
-  });
-  setInput("");
-};
+  // Create todo
+  const createTodo = async (e) => {
+    e.preventDefault();
+    if (input === "") {
+      alert("Please enter a valid todo");
+      return;
+    }
+    await addDoc(collection(db, "todos"), {
+      text: input,
+      completed: false,
+      createdAt: serverTimestamp(), // Add timestamp when creating a todo
+    });
+    setInput("");
+  };
 
   // Read todo from firebase
   useEffect(() => {
-    // const q = query(collection(db, "todos"));
-    // const unsubscribe = onSnapshot(q, (querySnapshot) => {
-    //   let todosArr = [];
-    //   querySnapshot.forEach((doc) => {
-    //     todosArr.push({ ...doc.data(), id: doc.id });
-    //   });
-    //   setTodos(todosArr);
-    // });
-    // return () => unsubscribe();
-
     const q = query(collection(db, "todos"), orderBy("createdAt", "asc")); // Order by createdAt field
     const unsubscribe = onSnapshot(q, (snapshot) => {
       const todosArray = snapshot.docs.map((doc) => ({
